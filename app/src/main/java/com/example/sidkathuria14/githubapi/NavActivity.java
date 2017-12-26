@@ -2,6 +2,8 @@ package com.example.sidkathuria14.githubapi;
 
 import android.app.ProgressDialog;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -15,9 +17,13 @@ import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.EditText;
 
+import com.example.sidkathuria14.githubapi.Models.SearchUser;
 import com.example.sidkathuria14.githubapi.Models.User;
+import com.example.sidkathuria14.githubapi.adapter.UserRecyclerAdapter;
 import com.example.sidkathuria14.githubapi.api.NameApi;
 import com.example.sidkathuria14.githubapi.api.UsernameApi;
+
+import java.util.ArrayList;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -32,13 +38,21 @@ public class NavActivity extends AppCompatActivity
     EditText etInput;String username;
     public static final String TAG = "github";
     DatabaseHandler db;
+    int cnt = 0;
     ProgressDialog progress;
 
 Retrofit retrofit;
+    RecyclerView recyclerView;
+    UserRecyclerAdapter adapter;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_nav);
+
+recyclerView = (RecyclerView)findViewById(R.id.rv);
+        adapter = new UserRecyclerAdapter(this,new ArrayList<SearchUser>());
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.setAdapter(adapter);
 
 
         retrofit = new Retrofit.Builder().baseUrl("https://api.github.com").
@@ -52,7 +66,7 @@ Retrofit retrofit;
                 etInput.setText("");
                 progress.show();
                 username = etInput.getText().toString();
-                CallUsername(username);
+                CallSearchName(username);
             }
         });
 
@@ -127,56 +141,66 @@ Retrofit retrofit;
 
 public void CallSearchName(String name){
     NameApi nameApi = retrofit.create(NameApi.class);
-    Callback<User> callback = new Callback<User>() {
+    Callback<SearchUser> callback = new Callback<SearchUser>() {
         @Override
-        public void onResponse(Call<User> call, Response<User> response) {
+        public void onResponse(Call<SearchUser> call, Response<SearchUser> response) {
             progress.dismiss();
-            Log.d(TAG, "onResponse: searchname" + " " + response.body().getName());
+            Log.d(TAG, "onResponse: " + response.isSuccessful());
+
+            while(response.isSuccessful()){
+                Log.d(TAG, "onResponse: callsearchname" + response.body().getIncomplete_results());
+                cnt +=1;
+            }
+            Log.d(TAG, "onResponse: cnt = " + cnt);
+            if (response.isSuccessful()) {
+                Log.d(TAG, "onResponse: searchname" + " " + response.body().getItems()[0].getItemsObject().getScore());
+            }
         }
 
         @Override
-        public void onFailure(Call<User> call, Throwable t) {
+        public void onFailure(Call<SearchUser> call, Throwable t) {
             Log.d(TAG, "onFailure: searchname");
             progress.dismiss();
         }
     };
     nameApi.getSearchUser(name).enqueue(callback);
+    Log.d(TAG, "CallSearchName: " + nameApi.getSearchUser(name).request());
 }
 
-    public void CallUsername(final String username){
-
-        UsernameApi usernameApi = retrofit.create(UsernameApi.class);
-        Callback<User> callback = new Callback<User>() {
-            @Override
-            public void onResponse(Call<User> call, Response<User> response) {
-                Log.d(TAG, "onResponse: username" + response.isSuccessful());
-                if(response.isSuccessful() == false){
-                    Log.d(TAG, "onResponse: if condition false");
-                    CallSearchName(username);
-                }
-//                Log.d(TAG, "onResponse: username" + Integer.parseInt(String.valueOf(response.body().getFollowers())));
-               else {
-                    db.addUser(new User(Integer.parseInt(String.valueOf(response.body().getId())), response.body().getName(),
-                            Integer.parseInt(String.valueOf(response.body().getPublic_repos())), Integer.parseInt(String.valueOf(response.body().getPrivate_repos())),
-                            Integer.parseInt(String.valueOf(response.body().getFollowers())), Integer.parseInt(String.valueOf(response.body().getFollowing())),
-                            Integer.parseInt(String.valueOf(response.body().getPublic_gists())),
-                            String.valueOf(response.body().getType()), String.valueOf(response.body().getBio())
-                    ));
-                    Log.d(TAG, "onResponse: username" + db.getCount());
-                    progress.dismiss();
-                }
-            }
-
-            @Override
-            public void onFailure(Call<User> call, Throwable t) {
-                progress.dismiss();Log.d(TAG, "onFailure: ");
-//                CallSearchName(username);
-            }
-
-        } ;
-        usernameApi.get_repos(username).enqueue(callback);
-
-    }
+//    public void CallUsername(final String username){
+//
+//        UsernameApi usernameApi = retrofit.create(UsernameApi.class);
+//        Callback<User> callback = new Callback<User>() {
+//            @Override
+//            public void onResponse(Call<User> call, Response<User> response) {
+//                Log.d(TAG, "onResponse: username" + response.isSuccessful());
+//                if(response.isSuccessful() == false){
+//                    Log.d(TAG, "onResponse: if condition false");
+//                    CallSearchName(username);
+//                }
+////                Log.d(TAG, "onResponse: username" + Integer.parseInt(String.valueOf(response.body().getFollowers())));
+//               else {
+//                    db.addUser(new User(Integer.parseInt(String.valueOf(response.body().getId())), response.body().getName(),
+//                            Integer.parseInt(String.valueOf(response.body().getPublic_repos())), Integer.parseInt(String.valueOf(response.body().getPrivate_repos())),
+//                            Integer.parseInt(String.valueOf(response.body().getFollowers())), Integer.parseInt(String.valueOf(response.body().getFollowing())),
+//                            Integer.parseInt(String.valueOf(response.body().getPublic_gists())),
+//                            String.valueOf(response.body().getType()), String.valueOf(response.body().getBio())
+//                    ));
+//                    Log.d(TAG, "onResponse: username" + db.getCount());
+//                    progress.dismiss();
+//                }
+//            }
+//
+//            @Override
+//            public void onFailure(Call<User> call, Throwable t) {
+//                progress.dismiss();Log.d(TAG, "onFailure: ");
+////                CallSearchName(username);
+//            }
+//
+//        } ;
+//        usernameApi.get_repos(username).enqueue(callback);
+//
+//    }
 
 
 }

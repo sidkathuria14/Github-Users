@@ -1,5 +1,6 @@
 package com.example.sidkathuria14.githubapi.api;
 
+import com.example.sidkathuria14.githubapi.Models.SearchUser;
 import com.example.sidkathuria14.githubapi.Models.User;
 
 import retrofit2.Call;
@@ -11,6 +12,6 @@ import retrofit2.http.Query;
  */
 
 public interface NameApi {
-    @GET("/search/users/")
-    Call<User> getSearchUser(@Query("q")String name);
+    @GET("/search/users")
+    Call<SearchUser> getSearchUser(@Query("q")String name);
 }
