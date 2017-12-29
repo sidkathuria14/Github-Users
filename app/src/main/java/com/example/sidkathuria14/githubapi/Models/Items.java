@@ -5,9 +5,31 @@ package com.example.sidkathuria14.githubapi.Models;
  */
 
 public class Items {
-    ItemsObject itemsObject;
+    String login,avatar_url,type,html_url;
+    int id;
+    double score;
 
-    public ItemsObject getItemsObject() {
-        return itemsObject;
+    public String getLogin() {
+        return login;
+    }
+
+    public String getAvatar_url() {
+        return avatar_url;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public String getHtml_url() {
+        return html_url;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public double getScore() {
+        return score;
     }
 }

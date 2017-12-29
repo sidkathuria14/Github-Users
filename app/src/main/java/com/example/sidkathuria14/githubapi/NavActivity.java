@@ -55,7 +55,7 @@ recyclerView = (RecyclerView)findViewById(R.id.rv);
         recyclerView.setAdapter(adapter);
 
 
-        retrofit = new Retrofit.Builder().baseUrl("https://api.github.com").
+        retrofit = new Retrofit.Builder().baseUrl("https://api.github.com/").
                 addConverterFactory(GsonConverterFactory.create()).build();
 
         db = new DatabaseHandler(this);
@@ -67,6 +67,8 @@ recyclerView = (RecyclerView)findViewById(R.id.rv);
                 progress.show();
                 username = etInput.getText().toString();
                 CallSearchName(username);
+//CallUsername(username);
+
             }
         });
 
@@ -153,7 +155,7 @@ public void CallSearchName(String name){
             }
             Log.d(TAG, "onResponse: cnt = " + cnt);
             if (response.isSuccessful()) {
-                Log.d(TAG, "onResponse: searchname" + " " + response.body().getItems()[0].getItemsObject().getScore());
+                Log.d(TAG, "onResponse: searchname" + " " + response.body().getItems()[0].getScore());
             }
         }
 
@@ -166,7 +168,7 @@ public void CallSearchName(String name){
     nameApi.getSearchUser(name).enqueue(callback);
     Log.d(TAG, "CallSearchName: " + nameApi.getSearchUser(name).request());
 }
-
+//
 //    public void CallUsername(final String username){
 //
 //        UsernameApi usernameApi = retrofit.create(UsernameApi.class);

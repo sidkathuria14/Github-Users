@@ -48,8 +48,8 @@ public class UserRecyclerAdapter extends RecyclerView.Adapter<UserRecyclerAdapte
     @Override
     public void onBindViewHolder(MyViewHolder holder, int position) {
 SearchUser user = arrayList.get(position);
-        holder.tvName.setText(user.getItems()[position].getItemsObject().getLogin());
-        holder.tvBio.setText(user.getItems()[position].getItemsObject().getType());
+        holder.tvName.setText(user.getItems()[position].getLogin());
+        holder.tvBio.setText(user.getItems()[position].getType());
 
     }
 
